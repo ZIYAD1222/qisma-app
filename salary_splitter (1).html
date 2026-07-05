@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>مقسم الراتب</title>
+<style>
+  :root{
+    --bg: #0f1417;
+    --panel: #171d21;
+    --panel-2: #1e262b;
+    --border: #2a3338;
+    --text: #e8edf0;
+    --text-dim: #8b979c;
+    --accent: #3fb88f;
+    --danger: #e0645f;
+    --radius: 12px;
+  }
+  :root[data-theme="light"]{
+    --bg: #f4f6f7;
+    --panel: #ffffff;
+    --panel-2: #eef1f2;
+    --border: #dde3e5;
+    --text: #1c2427;
+    --text-dim: #667075;
+    --accent: #1f8f68;
+    --danger: #c4403a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+  .wrap{
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  h1{
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .sub{
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: 0 0 24px;
+  }
+  .card{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .salary-row{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .salary-row label{
+    font-size: 14px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  input[type=number], input[type=text]{
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 15px;
+    outline: none;
+  }
+  input[type=number]:focus, input[type=text]:focus{
+    border-color: var(--accent);
+  }
+  #salary{ width: 150px; font-weight: 600; }
+
+  .top-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom: 24px;
+  }
+  .theme-btn{
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .theme-btn:hover{ color: var(--accent); border-color: var(--accent); }
+  .theme-btn svg{ width: 18px; height: 18px; }
+
+  .cats-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .cat-card{
+    position: relative;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 12px 16px;
+    text-align: center;
+  }
+  .del-btn{
+    position:absolute;
+    top: 6px;
+    left: 6px;
+    background:none;
+    border:none;
+    color: var(--text-dim);
+    cursor:pointer;
+    font-size: 14px;
+    padding: 4px 6px;
+    line-height: 1;
+  }
+  .del-btn:hover{ color: var(--danger); }
+
+  .gauge{
+    position: relative;
+    width: 108px;
+    margin: 4px auto 2px;
+  }
+  .gauge svg{ width: 100%; height: auto; display:block; }
+  .gauge path{ fill:none; stroke-width: 9; stroke-linecap: round; }
+  .gauge-bg{ stroke: var(--border); }
+  .gauge-label{
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.2px;
+    color: var(--text);
+  }
+
+  .cat-name{
+    display:block;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 2px 0 8px;
+    margin-top: 2px;
+  }
+  .cat-name:focus{ outline: none; color: var(--text); }
+
+  input[type=range]{
+    width: 100%;
+    accent-color: var(--accent);
+    display:block;
+    margin: 2px 0 8px;
+  }
+  .cat-amt{
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .fill-btn{
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 8px;
+    padding: 5px 6px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .fill-btn:hover{ color: var(--accent); border-color: var(--accent); }
+
+  .add-btn{
+    width:100%;
+    margin-top: 16px;
+    background: var(--panel-2);
+    border: 1px dashed var(--border);
+    color: var(--text-dim);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 13px;
+    cursor:pointer;
+  }
+  .add-btn:hover{ color: var(--text); border-color: var(--accent); }
+
+  .summary{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top: 4px;
+  }
+  .summary .lbl{ font-size:12px; color: var(--text-dim); }
+  .summary .val{ font-size: 22px; font-weight: 700; margin-top:2px; font-variant-numeric: tabular-nums; }
+  .bar{
+    height: 8px;
+    border-radius: 4px;
+    background: var(--panel-2);
+    margin: 14px 0 4px;
+    overflow:hidden;
+    display:flex;
+  }
+
+  .save-btn{
+    width:100%;
+    background: var(--accent);
+    color:#06231a;
+    border:none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor:pointer;
+    margin-top: 4px;
+  }
+  .save-btn:hover{ opacity:.9; }
+
+  .hist-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .year-total{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-bottom: 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hist-item:last-child{ border-bottom:none; }
+  .hist-date{ font-size: 13px; font-weight: 600; }
+  .hist-breakdown{ font-size:12px; color: var(--text-dim); margin-top:2px; }
+  .hist-salary{ font-size:14px; font-weight:600; font-variant-numeric: tabular-nums; }
+  .empty{ font-size:13px; color: var(--text-dim); text-align:center; padding: 10px 0; }
+  .section-title{ font-size:14px; font-weight:600; margin-bottom:10px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-row">
+    <div>
+      <h1>قسمة</h1>
+      <p class="sub">قسّم راتبك بالنسبة اللي تناسبك، وتحكم في فئاتك بكل حرية.</p>
+    </div>
+    <button class="theme-btn" id="theme-toggle" aria-label="تبديل الوضع الداكن والفاتح">
+      <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+    </button>
+  </div>
+
+  <div class="card">
+    <div class="salary-row">
+      <label for="salary">الراتب الشهري</label>
+      <input type="number" id="salary" value="10000" min="0" step="100">
+      <span style="font-size:13px; color: var(--text-dim);">ريال</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cats-grid" id="cats"></div>
+    <button class="add-btn" id="add-cat">+ إضافة فئة</button>
+  </div>
+
+  <div class="card">
+    <div class="summary">
+      <div>
+        <div class="lbl">إجمالي النسب المستخدمة</div>
+        <div class="val" id="total-pct">0%</div>
+      </div>
+      <div style="text-align:left;">
+        <div class="lbl">المتبقي غير مخصص</div>
+        <div class="val" id="remaining">0 ريال</div>
+      </div>
+    </div>
+    <div class="bar" id="bar"></div>
+    <button class="save-btn" id="save-month">حفظ هذا الشهر في السجل</button>
+  </div>
+
+  <div class="card">
+    <div class="section-title">السجل المحفوظ</div>
+    <div class="year-total">
+      <div>
+        <div class="lbl">إجمالي المبلغ المستخدم هذه السنة</div>
+        <div class="val" id="year-total-amt">0 ريال</div>
+      </div>
+      <div style="text-align:left;">
+        <div class="lbl">عدد الأشهر المحفوظة</div>
+        <div class="val" id="year-total-count">0</div>
+      </div>
+    </div>
+    <div id="history"></div>
+  </div>
+</div>
+
+<script>
+const sunIcon = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>';
+const moonIcon = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+
+function applyTheme(theme){
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('theme-icon').innerHTML = theme === 'light' ? sunIcon : moonIcon;
+}
+
+async function loadTheme(){
+  let theme = 'dark';
+  try{
+    const v = localStorage.getItem('qisma-theme');
+    if(v) theme = v;
+  }catch(e){}
+  applyTheme(theme);
+}
+
+document.getElementById('theme-toggle').addEventListener('click', async () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  if(typeof categories !== 'undefined' && categories.length){
+    renderCats();
+    recalc();
+  }
+  try{ localStorage.setItem('qisma-theme', next); }catch(e){}
+});
+
+loadTheme();
+
+const paletteDark = ['#7f77dd','#3fb88f','#d85a30','#d4537e','#378add','#efa927','#8b979c','#a94ad4'];
+const paletteLight = ['#534ab7','#0f6e56','#993c1d','#993556','#185fa5','#854f0b','#5f5e5a','#712b13'];
+function getColor(idx){
+  const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const p = theme === 'light' ? paletteLight : paletteDark;
+  return p[idx % p.length];
+}
+const ARC_LEN = 125.66;
+let categories = [];
+let salary = 10000;
+let history = [];
+
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function fmt(n){
+  return Math.round(n).toLocaleString('en-US');
+}
+
+async function loadState(){
+  try{
+    const v = localStorage.getItem('qisma-state');
+    if(v){
+      const parsed = JSON.parse(v);
+      salary = parsed.salary ?? 10000;
+      categories = parsed.categories ?? defaultCats();
+      categories.forEach((c, i) => { if(c.colorIndex === undefined) c.colorIndex = i; });
+    } else {
+      categories = defaultCats();
+    }
+  }catch(e){
+    categories = defaultCats();
+  }
+  try{
+    const v = localStorage.getItem('qisma-history');
+    if(v){
+      history = JSON.parse(v);
+    }
+  }catch(e){
+    history = [];
+  }
+  document.getElementById('salary').value = salary;
+  renderCats();
+  renderHistory();
+  recalc();
+}
+
+function defaultCats(){
+  return [
+    { id: uid(), name: 'مصاريف شخصية', colorIndex: 0, pct: 30 },
+    { id: uid(), name: 'استثمار', colorIndex: 1, pct: 20 },
+    { id: uid(), name: 'إيجار', colorIndex: 2, pct: 25 },
+    { id: uid(), name: 'ديون', colorIndex: 3, pct: 15 }
+  ];
+}
+
+async function saveState(){
+  try{
+    localStorage.setItem('qisma-state', JSON.stringify({ salary, categories }));
+  }catch(e){
+    console.error('تعذر الحفظ', e);
+  }
+}
+
+function renderCats(){
+  const el = document.getElementById('cats');
+  el.innerHTML = '';
+  categories.forEach(cat => {
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    card.innerHTML = `
+      <button class="del-btn" data-id="${cat.id}" aria-label="حذف الفئة">✕</button>
+      <div class="gauge">
+        <svg viewBox="0 0 100 56">
+          <path class="gauge-bg" d="M10,50 A40,40 0 0,1 90,50"></path>
+          <path class="gauge-fg" id="arc-${cat.id}" d="M10,50 A40,40 0 0,1 90,50" stroke="${getColor(cat.colorIndex)}" stroke-dasharray="${ARC_LEN}" stroke-dashoffset="${ARC_LEN}"></path>
+        </svg>
+        <div class="gauge-label" id="pct-${cat.id}">0%</div>
+      </div>
+      <input class="cat-name" value="${cat.name}" data-id="${cat.id}" />
+      <input type="range" min="0" max="100" step="1" value="${cat.pct}" data-id="${cat.id}" class="slider" />
+      <div class="cat-amt" id="amt-${cat.id}">0 ريال</div>
+      <button class="fill-btn" data-id="${cat.id}">+ أضف الباقي</button>
+    `;
+    el.appendChild(card);
+  });
+
+  el.querySelectorAll('.slider').forEach(s => {
+    s.addEventListener('input', e => {
+      const cat = categories.find(c => c.id === e.target.dataset.id);
+      cat.pct = Number(e.target.value);
+      recalc();
+      saveState();
+    });
+  });
+  el.querySelectorAll('.cat-name').forEach(inp => {
+    inp.addEventListener('change', e => {
+      const cat = categories.find(c => c.id === e.target.dataset.id);
+      cat.name = e.target.value || cat.name;
+      saveState();
+    });
+  });
+  el.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      categories = categories.filter(c => c.id !== e.target.dataset.id);
+      renderCats();
+      recalc();
+      saveState();
+    });
+  });
+  el.querySelectorAll('.fill-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const cat = categories.find(c => c.id === e.target.dataset.id);
+      const totalPct = categories.reduce((sum, c) => sum + c.pct, 0);
+      const remaining = 100 - totalPct;
+      cat.pct = Math.max(0, Math.min(100, cat.pct + remaining));
+      const slider = el.querySelector(`.slider[data-id="${cat.id}"]`);
+      if(slider) slider.value = cat.pct;
+      recalc();
+      saveState();
+    });
+  });
+}
+
+function recalc(){
+  salary = Math.max(0, Number(document.getElementById('salary').value) || 0);
+  let totalPct = 0;
+  const bar = document.getElementById('bar');
+  bar.innerHTML = '';
+  categories.forEach(cat => {
+    totalPct += cat.pct;
+    const amt = salary * cat.pct / 100;
+    const pctEl = document.getElementById('pct-' + cat.id);
+    const amtEl = document.getElementById('amt-' + cat.id);
+    const arcEl = document.getElementById('arc-' + cat.id);
+    if(pctEl) pctEl.textContent = cat.pct + '%';
+    if(amtEl) amtEl.textContent = fmt(amt) + ' ريال';
+    if(arcEl) arcEl.setAttribute('stroke-dashoffset', ARC_LEN * (1 - cat.pct / 100));
+    const seg = document.createElement('div');
+    seg.style.cssText = `height:100%; width:${cat.pct}%; background:${getColor(cat.colorIndex)};`;
+    bar.appendChild(seg);
+  });
+  const totalEl = document.getElementById('total-pct');
+  totalEl.textContent = totalPct + '%';
+  totalEl.style.color = totalPct > 100 ? 'var(--danger)' : 'var(--text)';
+  const remaining = salary * (100 - totalPct) / 100;
+  const remEl = document.getElementById('remaining');
+  remEl.textContent = fmt(remaining) + ' ريال';
+  remEl.style.color = remaining < 0 ? 'var(--danger)' : 'var(--text)';
+}
+
+function renderHistory(){
+  const currentYear = new Date().getFullYear();
+  const yearEntries = history.filter(h => h.year === currentYear);
+  const yearTotal = yearEntries.reduce((sum, h) => sum + h.salary, 0);
+  document.getElementById('year-total-amt').textContent = fmt(yearTotal) + ' ريال';
+  document.getElementById('year-total-count').textContent = yearEntries.length;
+
+  const el = document.getElementById('history');
+  if(history.length === 0){
+    el.innerHTML = '<div class="empty">ما فيه سجل محفوظ بعد</div>';
+    return;
+  }
+  el.innerHTML = '';
+  [...history].reverse().forEach(entry => {
+    const item = document.createElement('div');
+    item.className = 'hist-item';
+    const breakdown = entry.categories.map(c => `${c.name} ${c.pct}%`).join(' · ');
+    item.innerHTML = `
+      <div>
+        <div class="hist-date">${entry.date}</div>
+        <div class="hist-breakdown">${breakdown}</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="hist-salary">${fmt(entry.salary)} ريال</div>
+        <button class="del-btn" style="position:static;" data-id="${entry.id}" aria-label="حذف من السجل">✕</button>
+      </div>
+    `;
+    el.appendChild(item);
+  });
+  el.querySelectorAll('.del-btn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      history = history.filter(h => h.id !== e.target.dataset.id);
+      renderHistory();
+      try{ localStorage.setItem('qisma-history', JSON.stringify(history)); }catch(err){}
+    });
+  });
+}
+
+document.getElementById('salary').addEventListener('input', () => { recalc(); saveState(); });
+
+document.getElementById('add-cat').addEventListener('click', () => {
+  const colorIndex = categories.length;
+  categories.push({ id: uid(), name: 'فئة جديدة', colorIndex, pct: 0 });
+  renderCats();
+  recalc();
+  saveState();
+});
+
+document.getElementById('save-month').addEventListener('click', async () => {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ar-SA', { year:'numeric', month:'long' });
+  const entry = {
+    id: uid(),
+    date: dateStr,
+    year: now.getFullYear(),
+    salary,
+    categories: categories.map(c => ({ name: c.name, pct: c.pct, colorIndex: c.colorIndex }))
+  };
+  history.push(entry);
+  renderHistory();
+  try{
+    localStorage.setItem('qisma-history', JSON.stringify(history));
+  }catch(e){
+    console.error('تعذر حفظ السجل', e);
+  }
+});
+
+loadState();
+</script>
+</body>
+</html>
