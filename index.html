@@ -233,6 +233,7 @@
     margin-top: 4px;
   }
   .save-btn:hover{ opacity:.9; }
+  :root[data-theme="light"] .save-btn{ color: #f2f5f3; }
 
   .hist-item{
     display:flex;
@@ -344,8 +345,8 @@ document.getElementById('theme-toggle').addEventListener('click', async () => {
 
 loadTheme();
 
-const paletteDark = ['#7f77dd','#3fb88f','#d85a30','#d4537e','#378add','#efa927','#8b979c','#a94ad4'];
-const paletteLight = ['#534ab7','#0f6e56','#993c1d','#993556','#185fa5','#854f0b','#5f5e5a','#712b13'];
+const paletteDark = ['#7f77dd','#3fb88f','#378add','#efa927','#5dcaa5','#afa9ec','#8b979c','#85b7eb'];
+const paletteLight = ['#534ab7','#0f6e56','#185fa5','#854f0b','#085041','#3c3489','#5f5e5a','#0c447c'];
 function getColor(idx){
   const theme = document.documentElement.getAttribute('data-theme') || 'dark';
   const p = theme === 'light' ? paletteLight : paletteDark;
