@@ -80,8 +80,9 @@
   }
   input[type=number]:focus, input[type=text]:focus{
     border-color: var(--accent);
+    transition: border-color 150ms ease;
   }
-  #salary{ width: 150px; font-weight: 600; }
+  #salary{ width: 150px; font-weight: 600; transition: border-color 150ms ease; }
 
   .top-row{
     display:flex;
@@ -101,13 +102,23 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition: color 150ms ease, border-color 150ms ease, transform 150ms var(--ease-out);
   }
-  .theme-btn:hover{ color: var(--accent); border-color: var(--accent); }
-  .theme-btn svg{ width: 18px; height: 18px; }
+  @media (hover: hover) and (pointer: fine){
+    .theme-btn:hover{ color: var(--accent); border-color: var(--accent); }
+  }
+  .theme-btn:active{ transform: scale(0.9); }
+  .theme-btn svg{ width: 18px; height: 18px; transition: transform 220ms var(--ease-in-out); }
+  .theme-btn.spin svg{ transform: rotate(180deg); }
+
+  :root{
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  }
 
   .cats-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 16px;
   }
   .cat-card{
@@ -117,7 +128,22 @@
     border-radius: var(--radius);
     padding: 14px 12px 16px;
     text-align: center;
+    animation: cardIn 260ms var(--ease-out) both;
+    transition: border-color 150ms ease, opacity 180ms ease, transform 180ms var(--ease-in-out);
   }
+  .cat-card.removing{
+    opacity: 0;
+    transform: scale(0.94);
+    pointer-events: none;
+  }
+  @media (hover: hover) and (pointer: fine){
+    .cat-card:hover{ border-color: var(--accent); }
+  }
+  @keyframes cardIn{
+    from{ opacity: 0; transform: translateY(8px) scale(0.97); }
+    to{ opacity: 1; transform: translateY(0) scale(1); }
+  }
+
   .del-btn{
     position:absolute;
     top: 6px;
@@ -129,8 +155,13 @@
     font-size: 14px;
     padding: 4px 6px;
     line-height: 1;
+    border-radius: 6px;
+    transition: color 150ms ease, transform 120ms var(--ease-out), background 150ms ease;
   }
-  .del-btn:hover{ color: var(--danger); }
+  @media (hover: hover) and (pointer: fine){
+    .del-btn:hover{ color: var(--danger); background: rgba(224,100,95,0.1); }
+  }
+  .del-btn:active{ transform: scale(0.88); }
 
   .gauge{
     position: relative;
@@ -140,6 +171,7 @@
   .gauge svg{ width: 100%; height: auto; display:block; }
   .gauge path{ fill:none; stroke-width: 9; stroke-linecap: round; }
   .gauge-bg{ stroke: var(--border); }
+  .gauge-fg{ transition: stroke-dashoffset 240ms var(--ease-out), stroke 200ms ease; }
   .gauge-label{
     position: absolute;
     left: 0; right: 0;
@@ -150,20 +182,44 @@
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.2px;
     color: var(--text);
+    transition: color 150ms ease;
   }
 
-  .cat-name{
+  .cat-select{
     display:block;
     width: 100%;
     text-align: center;
+    text-align-last: center;
     font-size: 13px;
     background: transparent;
     border: none;
     color: var(--text-dim);
-    padding: 2px 0 8px;
+    padding: 2px 0 4px;
     margin-top: 2px;
+    cursor: pointer;
+    transition: color 150ms ease;
   }
-  .cat-name:focus{ outline: none; color: var(--text); }
+  .cat-select:hover, .cat-select:focus{ outline: none; color: var(--text); }
+  .cat-select option{ background: var(--panel-2); color: var(--text); }
+
+  .cat-name-custom{
+    display:block;
+    width: 100%;
+    text-align: center;
+    font-size: 12.5px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--border);
+    color: var(--text-dim);
+    padding: 2px 0 6px;
+    margin: 0 0 6px;
+    animation: revealIn 200ms var(--ease-out) both;
+  }
+  .cat-name-custom:focus{ outline: none; color: var(--text); border-color: var(--accent); }
+  @keyframes revealIn{
+    from{ opacity: 0; transform: translateY(-4px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
 
   input[type=range]{
     width: 100%;
@@ -176,6 +232,7 @@
     font-weight: 600;
     color: var(--text);
     margin-bottom: 8px;
+    transition: color 150ms ease;
   }
 
   .fill-btn{
@@ -187,8 +244,12 @@
     padding: 5px 6px;
     font-size: 11px;
     cursor: pointer;
+    transition: color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
   }
-  .fill-btn:hover{ color: var(--accent); border-color: var(--accent); }
+  @media (hover: hover) and (pointer: fine){
+    .fill-btn:hover{ color: var(--accent); border-color: var(--accent); }
+  }
+  .fill-btn:active{ transform: scale(0.96); }
 
   .add-btn{
     width:100%;
@@ -200,8 +261,12 @@
     padding: 10px;
     font-size: 13px;
     cursor:pointer;
+    transition: color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
   }
-  .add-btn:hover{ color: var(--text); border-color: var(--accent); }
+  @media (hover: hover) and (pointer: fine){
+    .add-btn:hover{ color: var(--text); border-color: var(--accent); }
+  }
+  .add-btn:active{ transform: scale(0.98); }
 
   .summary{
     display:flex;
@@ -210,7 +275,7 @@
     margin-top: 4px;
   }
   .summary .lbl{ font-size:12px; color: var(--text-dim); }
-  .summary .val{ font-size: 22px; font-weight: 700; margin-top:2px; font-variant-numeric: tabular-nums; }
+  .summary .val{ font-size: 22px; font-weight: 700; margin-top:2px; font-variant-numeric: tabular-nums; transition: color 150ms ease; }
   .bar{
     height: 8px;
     border-radius: 4px;
@@ -219,6 +284,7 @@
     overflow:hidden;
     display:flex;
   }
+  .bar > div{ transition: width 240ms var(--ease-out), background 200ms ease; }
 
   .save-btn{
     width:100%;
@@ -231,8 +297,13 @@
     font-weight: 600;
     cursor:pointer;
     margin-top: 4px;
+    transition: opacity 150ms ease, transform 120ms var(--ease-out), background 200ms ease;
   }
-  .save-btn:hover{ opacity:.9; }
+  @media (hover: hover) and (pointer: fine){
+    .save-btn:hover{ opacity:.9; }
+  }
+  .save-btn:active{ transform: scale(0.98); }
+  .save-btn.saved{ background: #2f9e60; }
   :root[data-theme="light"] .save-btn{ color: #f2f5f3; }
 
   .hist-item{
@@ -241,6 +312,7 @@
     align-items:center;
     padding: 12px 0;
     border-bottom: 1px solid var(--border);
+    animation: cardIn 260ms var(--ease-out) both;
   }
   .year-total{
     display:flex;
@@ -335,6 +407,9 @@ async function loadTheme(){
 document.getElementById('theme-toggle').addEventListener('click', async () => {
   const current = document.documentElement.getAttribute('data-theme') || 'dark';
   const next = current === 'dark' ? 'light' : 'dark';
+  const btn = document.getElementById('theme-toggle');
+  btn.classList.add('spin');
+  setTimeout(() => btn.classList.remove('spin'), 220);
   applyTheme(next);
   if(typeof categories !== 'undefined' && categories.length){
     renderCats();
@@ -408,12 +483,20 @@ async function saveState(){
   }
 }
 
+const CATEGORY_OPTIONS = [
+  'مصاريف شخصية', 'إيجار', 'فواتير', 'مواصلات', 'تسوق',
+  'ترفيه', 'تعليم', 'تأمين', 'ادخار', 'استثمار',
+  'ديون', 'زكاة وصدقة', 'طوارئ', 'دعم العائلة'
+];
+
 function renderCats(){
   const el = document.getElementById('cats');
   el.innerHTML = '';
-  categories.forEach(cat => {
+  categories.forEach((cat, i) => {
+    const isCustom = !CATEGORY_OPTIONS.includes(cat.name);
     const card = document.createElement('div');
     card.className = 'cat-card';
+    card.style.animationDelay = Math.min(i, 8) * 40 + 'ms';
     card.innerHTML = `
       <button class="del-btn" data-id="${cat.id}" aria-label="حذف الفئة">✕</button>
       <div class="gauge">
@@ -423,7 +506,11 @@ function renderCats(){
         </svg>
         <div class="gauge-label" id="pct-${cat.id}">0%</div>
       </div>
-      <input class="cat-name" value="${cat.name}" data-id="${cat.id}" />
+      <select class="cat-select" data-id="${cat.id}">
+        ${CATEGORY_OPTIONS.map(opt => `<option value="${opt}" ${!isCustom && cat.name === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+        <option value="__custom__" ${isCustom ? 'selected' : ''}>فئة أخرى...</option>
+      </select>
+      ${isCustom ? `<input class="cat-name-custom" data-id="${cat.id}" value="${cat.name}" placeholder="اكتب اسم الفئة" />` : ''}
       <input type="range" min="0" max="100" step="1" value="${cat.pct}" data-id="${cat.id}" class="slider" />
       <div class="cat-amt" id="amt-${cat.id}">0 ريال</div>
       <button class="fill-btn" data-id="${cat.id}">+ أضف الباقي</button>
@@ -439,19 +526,48 @@ function renderCats(){
       saveState();
     });
   });
-  el.querySelectorAll('.cat-name').forEach(inp => {
-    inp.addEventListener('change', e => {
+  el.querySelectorAll('.cat-select').forEach(sel => {
+    sel.addEventListener('change', e => {
       const cat = categories.find(c => c.id === e.target.dataset.id);
-      cat.name = e.target.value || cat.name;
+      if(e.target.value === '__custom__'){
+        cat.name = '';
+        renderCats();
+        recalc();
+        const input = el.querySelector(`.cat-name-custom[data-id="${cat.id}"]`);
+        if(input) input.focus();
+      } else {
+        cat.name = e.target.value;
+        renderCats();
+        recalc();
+      }
+      saveState();
+    });
+  });
+  el.querySelectorAll('.cat-name-custom').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const cat = categories.find(c => c.id === e.target.dataset.id);
+      cat.name = e.target.value;
+      saveState();
+    });
+    inp.addEventListener('blur', e => {
+      const cat = categories.find(c => c.id === e.target.dataset.id);
+      if(!cat.name.trim()) cat.name = 'فئة جديدة';
       saveState();
     });
   });
   el.querySelectorAll('.del-btn').forEach(btn => {
     btn.addEventListener('click', e => {
-      categories = categories.filter(c => c.id !== e.target.dataset.id);
-      renderCats();
-      recalc();
-      saveState();
+      const id = e.target.dataset.id;
+      const card = e.target.closest('.cat-card');
+      if(card){
+        card.classList.add('removing');
+        setTimeout(() => {
+          categories = categories.filter(c => c.id !== id);
+          renderCats();
+          recalc();
+          saveState();
+        }, 180);
+      }
     });
   });
   el.querySelectorAll('.fill-btn').forEach(btn => {
@@ -537,7 +653,9 @@ document.getElementById('salary').addEventListener('input', () => { recalc(); sa
 
 document.getElementById('add-cat').addEventListener('click', () => {
   const colorIndex = categories.length;
-  categories.push({ id: uid(), name: 'فئة جديدة', colorIndex, pct: 0 });
+  const usedNames = categories.map(c => c.name);
+  const defaultName = CATEGORY_OPTIONS.find(opt => !usedNames.includes(opt)) || CATEGORY_OPTIONS[0];
+  categories.push({ id: uid(), name: defaultName, colorIndex, pct: 0 });
   renderCats();
   recalc();
   saveState();
@@ -560,6 +678,14 @@ document.getElementById('save-month').addEventListener('click', async () => {
   }catch(e){
     console.error('تعذر حفظ السجل', e);
   }
+  const btn = document.getElementById('save-month');
+  const originalText = btn.textContent;
+  btn.classList.add('saved');
+  btn.textContent = 'تم الحفظ ✓';
+  setTimeout(() => {
+    btn.classList.remove('saved');
+    btn.textContent = originalText;
+  }, 1200);
 });
 
 loadState();
