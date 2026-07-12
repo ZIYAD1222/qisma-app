@@ -351,23 +351,26 @@ input[type=range]{
 .save-btn.saved{ background: #2f9e60; } /* يتلون أخضر لحظة تأكيد الحفظ */
 :root[data-theme="light"] .save-btn{ color: #f2f5f3; }
 
-/* زر "مسح كل المبالغ والنسب" — يصفّر كل الفئات دفعة وحدة */
+/* زر المسح الشامل (أيقونة زبالة فقط) — بجانب حقل الراتب */
 .reset-btn{
-  width:100%;
-  background: transparent;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--panel-2);
   border: 1px solid var(--border);
   color: var(--text-dim);
-  border-radius: 8px;
-  padding: 10px;
-  font-size: 12.5px;
-  cursor:pointer;
-  margin-top: 8px;
-  transition: color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out), background 150ms ease;
 }
+.reset-btn svg{ width: 15px; height: 15px; }
 @media (hover: hover) and (pointer: fine){
-  .reset-btn:hover{ color: var(--danger); border-color: var(--danger); }
+  .reset-btn:hover{ color: var(--danger); border-color: var(--danger); background: rgba(224,100,95,0.08); }
 }
-.reset-btn:active{ transform: scale(0.98); }
+.reset-btn:active{ transform: scale(0.88); }
 
 /* ============================================================
    10) بطاقة السجل (إجمالي السنة + قائمة الأشهر المحفوظة)

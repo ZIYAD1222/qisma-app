@@ -417,10 +417,8 @@ document.getElementById('save-month').addEventListener('click', async () => {
 });
 
 
-// زر "مسح كل المبالغ والنسب": يصفّر نسبة كل فئة موجودة (يبقي أسماء الفئات، بس يرجع النسب لصفر)
+// زر مسح النسب (أيقونة الزبالة): يصفّر نسبة كل فئة موجودة فورًا بضغطة وحدة، بدون تأكيد
 document.getElementById('reset-all').addEventListener('click', () => {
-  const confirmed = window.confirm('متأكد إنك تبي تصفر كل النسب والمبالغ بكل الفئات؟');
-  if(!confirmed) return;
   categories.forEach(c => { c.pct = 0; });
   renderCats();
   recalc();
