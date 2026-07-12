@@ -1,0 +1,396 @@
+/* ============================================================
+   1) المتغيرات (Variables) — ألوان الوضع الداكن والفاتح
+   كل الألوان بالتطبيق مبنية على هذي المتغيرات، فتغيير قيمة واحدة
+   هنا يغيّر لون العنصر بكل مكان يستخدمه بالصفحة
+   ============================================================ */
+:root{
+  --bg: #0f1417;          /* خلفية الصفحة */
+  --panel: #171d21;       /* خلفية البطاقات */
+  --panel-2: #1e262b;     /* خلفية العناصر الداخلية (حقول، فئات) */
+  --border: #2a3338;      /* لون الحدود والخطوط */
+  --text: #e8edf0;        /* لون النص الأساسي */
+  --text-dim: #8b979c;    /* لون النص الثانوي/الباهت */
+  --accent: #3fb88f;      /* اللون المميز (أزرار، تركيز) */
+  --danger: #e0645f;      /* لون التنبيه (تجاوز 100%) */
+  --radius: 12px;         /* درجة استدارة الحواف */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);     /* منحنى حركة للدخول/التغيير */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* منحنى حركة للخروج/الدوران */
+}
+
+/* نفس المتغيرات لكن بقيم الوضع الفاتح، تُفعّل لما نضيف data-theme="light" على <html> */
+:root[data-theme="light"]{
+  --bg: #f4f6f7;
+  --panel: #ffffff;
+  --panel-2: #eef1f2;
+  --border: #dde3e5;
+  --text: #1c2427;
+  --text-dim: #667075;
+  --accent: #1f8f68;
+  --danger: #c4403a;
+}
+
+/* ============================================================
+   2) الأساسيات (Reset & Base)
+   ============================================================ */
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 32px 16px;
+}
+.wrap{
+  max-width: 680px;
+  margin: 0 auto;
+}
+h1{
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.sub{
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 0 0 24px;
+}
+.card{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   3) الرأس (اسم التطبيق + زر تبديل الوضع الداكن/الفاتح)
+   ============================================================ */
+.top-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom: 24px;
+}
+.theme-btn{
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 150ms ease, border-color 150ms ease, transform 150ms var(--ease-out);
+}
+/* الـ hover يشتغل بس على الأجهزة اللي فيها ماوس فعلي، مو باللمس */
+@media (hover: hover) and (pointer: fine){
+  .theme-btn:hover{ color: var(--accent); border-color: var(--accent); }
+}
+.theme-btn:active{ transform: scale(0.9); } /* انكماش خفيف عند الضغط */
+.theme-btn svg{ width: 18px; height: 18px; transition: transform 220ms var(--ease-in-out); }
+.theme-btn.spin svg{ transform: rotate(180deg); } /* دوران الأيقونة عند تبديل الوضع */
+
+/* ============================================================
+   4) حقول الإدخال العامة (الراتب وغيره)
+   ============================================================ */
+input[type=number], input[type=text]{
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 15px;
+  outline: none;
+}
+input[type=number]:focus, input[type=text]:focus{
+  border-color: var(--accent);
+  transition: border-color 150ms ease;
+}
+.salary-row{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+.salary-row label{
+  font-size: 14px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+#salary{ width: 150px; font-weight: 600; transition: border-color 150ms ease; }
+
+/* ============================================================
+   5) شبكة بطاقات الفئات
+   ============================================================ */
+.cats-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+/* بطاقة الفئة الواحدة، فيها حركة دخول عند الإنشاء وحركة عند الحذف */
+.cat-card{
+  position: relative;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 12px 16px;
+  text-align: center;
+  animation: cardIn 260ms var(--ease-out) both;
+  transition: border-color 150ms ease, opacity 180ms ease, transform 180ms var(--ease-in-out);
+}
+.cat-card.removing{ /* تُضاف هذي الكلاس لحظة الحذف عشان تعطي حركة تلاشي قبل الإزالة الفعلية */
+  opacity: 0;
+  transform: scale(0.94);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine){
+  .cat-card:hover{ border-color: var(--accent); }
+}
+@keyframes cardIn{
+  from{ opacity: 0; transform: translateY(8px) scale(0.97); }
+  to{ opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* زر حذف الفئة (✕) أعلى زاوية البطاقة */
+.del-btn{
+  position:absolute;
+  top: 6px;
+  left: 6px;
+  background:none;
+  border:none;
+  color: var(--text-dim);
+  cursor:pointer;
+  font-size: 14px;
+  padding: 4px 6px;
+  line-height: 1;
+  border-radius: 6px;
+  transition: color 150ms ease, transform 120ms var(--ease-out), background 150ms ease;
+}
+@media (hover: hover) and (pointer: fine){
+  .del-btn:hover{ color: var(--danger); background: rgba(224,100,95,0.1); }
+}
+.del-btn:active{ transform: scale(0.88); }
+
+/* ============================================================
+   6) مؤشر نصف الدائرة (Gauge) لكل فئة
+   ============================================================ */
+.gauge{
+  position: relative;
+  width: 108px;
+  margin: 4px auto 2px;
+}
+.gauge svg{ width: 100%; height: auto; display:block; }
+.gauge path{ fill:none; stroke-width: 9; stroke-linecap: round; }
+.gauge-bg{ stroke: var(--border); }               /* المسار الخلفي (الرمادي) */
+.gauge-fg{ transition: stroke-dashoffset 240ms var(--ease-out), stroke 200ms ease; } /* المسار الملون المتحرك */
+.gauge-label{
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums; /* أرقام بعرض ثابت عشان ما "ترقص" لما تتغير */
+  letter-spacing: 0.2px;
+  color: var(--text);
+  transition: color 150ms ease;
+}
+
+/* ============================================================
+   7) اختيار اسم الفئة (قائمة منسدلة + حقل مخصص عند اختيار "أخرى")
+   ============================================================ */
+.cat-select{
+  display:block;
+  width: 100%;
+  text-align: center;
+  text-align-last: center;
+  font-size: 13px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 2px 0 4px;
+  margin-top: 2px;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+.cat-select:hover, .cat-select:focus{ outline: none; color: var(--text); }
+.cat-select option{ background: var(--panel-2); color: var(--text); }
+
+.cat-name-custom{
+  display:block;
+  width: 100%;
+  text-align: center;
+  font-size: 12.5px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--border);
+  color: var(--text-dim);
+  padding: 2px 0 6px;
+  margin: 0 0 6px;
+  animation: revealIn 200ms var(--ease-out) both; /* يظهر بحركة انزلاق خفيفة */
+}
+.cat-name-custom:focus{ outline: none; color: var(--text); border-color: var(--accent); }
+@keyframes revealIn{
+  from{ opacity: 0; transform: translateY(-4px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   8) شريط السحب (Slider) وحقل المبلغ القابل للتعديل
+   ============================================================ */
+input[type=range]{
+  width: 100%;
+  accent-color: var(--accent);
+  display:block;
+  margin: 2px 0 8px;
+}
+.amt-row{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+.amt-input{
+  width: 64px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed var(--border);
+  color: var(--text);
+  padding: 1px 2px;
+  font-variant-numeric: tabular-nums;
+  transition: border-color 150ms ease;
+}
+.amt-input:hover, .amt-input:focus{ outline: none; border-color: var(--accent); }
+.amt-suffix{ font-size: 12px; color: var(--text-dim); }
+/* إخفاء أسهم الزيادة/النقصان الافتراضية لحقل الرقم */
+.amt-input::-webkit-outer-spin-button, .amt-input::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+.amt-input{ -moz-appearance: textfield; }
+
+/* زر "أضف الباقي" تحت كل فئة */
+.fill-btn{
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 8px;
+  padding: 5px 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine){
+  .fill-btn:hover{ color: var(--accent); border-color: var(--accent); }
+}
+.fill-btn:active{ transform: scale(0.96); }
+
+/* زر "إضافة فئة" أسفل الشبكة */
+.add-btn{
+  width:100%;
+  margin-top: 16px;
+  background: var(--panel-2);
+  border: 1px dashed var(--border);
+  color: var(--text-dim);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 13px;
+  cursor:pointer;
+  transition: color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine){
+  .add-btn:hover{ color: var(--text); border-color: var(--accent); }
+}
+.add-btn:active{ transform: scale(0.98); }
+
+/* ============================================================
+   9) بطاقة الملخص (إجمالي النسب + المتبقي + الشريط + زر الحفظ)
+   ============================================================ */
+.summary{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top: 4px;
+}
+.summary .lbl{ font-size:12px; color: var(--text-dim); }
+.summary .val{ font-size: 22px; font-weight: 700; margin-top:2px; font-variant-numeric: tabular-nums; transition: color 150ms ease; }
+
+.bar{
+  height: 8px;
+  border-radius: 4px;
+  background: var(--panel-2);
+  margin: 14px 0 4px;
+  overflow:hidden;
+  display:flex;
+}
+.bar > div{ transition: width 240ms var(--ease-out), background 200ms ease; } /* كل شريحة تكبر/تصغر بحركة سلسة */
+
+.save-btn{
+  width:100%;
+  background: var(--accent);
+  color:#06231a;
+  border:none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor:pointer;
+  margin-top: 4px;
+  transition: opacity 150ms ease, transform 120ms var(--ease-out), background 200ms ease;
+}
+@media (hover: hover) and (pointer: fine){
+  .save-btn:hover{ opacity:.9; }
+}
+.save-btn:active{ transform: scale(0.98); }
+.save-btn.saved{ background: #2f9e60; } /* يتلون أخضر لحظة تأكيد الحفظ */
+:root[data-theme="light"] .save-btn{ color: #f2f5f3; }
+
+/* زر "مسح كل المبالغ والنسب" — يصفّر كل الفئات دفعة وحدة */
+.reset-btn{
+  width:100%;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12.5px;
+  cursor:pointer;
+  margin-top: 8px;
+  transition: color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine){
+  .reset-btn:hover{ color: var(--danger); border-color: var(--danger); }
+}
+.reset-btn:active{ transform: scale(0.98); }
+
+/* ============================================================
+   10) بطاقة السجل (إجمالي السنة + قائمة الأشهر المحفوظة)
+   ============================================================ */
+.year-total{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-bottom: 14px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.hist-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  animation: cardIn 260ms var(--ease-out) both;
+}
+.hist-item:last-child{ border-bottom:none; }
+.hist-date{ font-size: 13px; font-weight: 600; }
+.hist-breakdown{ font-size:12px; color: var(--text-dim); margin-top:2px; }
+.hist-salary{ font-size:14px; font-weight:600; font-variant-numeric: tabular-nums; }
+.empty{ font-size:13px; color: var(--text-dim); text-align:center; padding: 10px 0; }
+.section-title{ font-size:14px; font-weight:600; margin-bottom:10px; color: var(--text-dim); }

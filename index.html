@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>قسمة</title>
+<!-- ملف التنسيق (الشكل والألوان والحركات) -->
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- الرأس: اسم التطبيق + زر تبديل الوضع الداكن/الفاتح -->
+  <div class="top-row">
+    <div>
+      <h1>قسمة</h1>
+      <p class="sub">قسّم راتبك بالنسبة اللي تناسبك، وتحكم في فئاتك بكل حرية.</p>
+    </div>
+    <button class="theme-btn" id="theme-toggle" aria-label="تبديل الوضع الداكن والفاتح">
+      <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+    </button>
+  </div>
+
+  <!-- بطاقة إدخال الراتب الشهري -->
+  <div class="card">
+    <div class="salary-row">
+      <label for="salary">الراتب الشهري</label>
+      <input type="number" id="salary" value="10000" min="0" step="100">
+      <span style="font-size:13px; color: var(--text-dim);">ريال</span>
+    </div>
+  </div>
+
+  <!-- بطاقة الفئات: يتم تعبئتها ديناميكيًا بواسطة script.js -->
+  <div class="card">
+    <div class="cats-grid" id="cats"></div>
+    <button class="add-btn" id="add-cat">+ إضافة فئة</button>
+  </div>
+
+  <!-- بطاقة الملخص: إجمالي النسب + المتبقي + زر الحفظ الشهري -->
+  <div class="card">
+    <div class="summary">
+      <div>
+        <div class="lbl">إجمالي النسب المستخدمة</div>
+        <div class="val" id="total-pct">0%</div>
+      </div>
+      <div style="text-align:left;">
+        <div class="lbl">المتبقي غير مخصص</div>
+        <div class="val" id="remaining">0 ريال</div>
+      </div>
+    </div>
+    <div class="bar" id="bar"></div>
+    <button class="save-btn" id="save-month">حفظ هذا الشهر في السجل</button>
+    <button class="reset-btn" id="reset-all">مسح كل المبالغ والنسب</button>
+  </div>
+
+  <!-- بطاقة السجل: إجمالي السنة + قائمة الأشهر المحفوظة -->
+  <div class="card">
+    <div class="section-title">السجل المحفوظ</div>
+    <div class="year-total">
+      <div>
+        <div class="lbl">إجمالي المبلغ المستخدم هذه السنة</div>
+        <div class="val" id="year-total-amt">0 ريال</div>
+      </div>
+      <div style="text-align:left;">
+        <div class="lbl">عدد الأشهر المحفوظة</div>
+        <div class="val" id="year-total-count">0</div>
+      </div>
+    </div>
+    <div id="history"></div>
+  </div>
+
+</div>
+
+<!-- ملف المنطق والتفاعل (JavaScript) -->
+<script src="script.js"></script>
+</body>
+</html>
